@@ -10,3 +10,8 @@ ONonConMCM Function GetONonConMCM() global
     endIf
     return mcm
 EndFunction
+
+OSexIntegrationMain Function GetOStim() Global
+	quest q = game.GetFormFromFile(0x000801, "Ostim.esp") as quest
+	return (q as OSexIntegrationMain)
+EndFunction
