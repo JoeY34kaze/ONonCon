@@ -2,13 +2,30 @@ https://www.nexusmods.com/skyrimspecialedition/articles/2490
 
 This is an explanation of how OSex names and tags it's animations and how you can get that data from OStim. If you haven't read the API Rundown article yet, I highly suggest you do so.
 
-Let's take a look at an animation and break it down. In the folder (OSex)\meshes\0SA\mod\0Sex\scene\0MF\Sy6LLy9\Sx\LiftedLotusSxBU.xml we've got the animation data for the "Lifted Lotus" sex position animation. OSex holds IDs in two ways: scene id and animation ID. The scene ID is basically the thing you select in OSex's menus, and the individual animation IDs are the speed variants
+Let's take a look at an animation and break it down.
+ In the folder (OSex)\meshes\0SA\mod\0Sex\scene\0MF\Sy6LLy9\Sx\LiftedLotusSxBU.xml
+  we've got the animation data for the "Lifted Lotus" sex position animation.
+   OSex holds IDs in two ways: scene id and animation ID.
+    The scene ID is basically the thing you select in OSex's menus, and the individual animation IDs are the speed variants
 Scene ID: "0MF|Sy6!LLy9|Sx|LiftedLotusSxBU"
 Anim ID for speed 2: "0Sx0MF_Sx-LiftedLotusSxBU_S2"
 
-But what about tags? And what does all this mess mean?? Well let's break down the scene ID. First we have "0MF". This is basically just the module it comes from (OSex male and female). The next garbled mix of letters tells you how the actors are oriented relative to each other. This isn't usually useful so if you want to decode it, you can find the key in {OSex}\meshes\0SA\mod\0Sex\notes\PositionKey.txt. Next up we have "Sx". This is the animation classification, basically it's OSex's version of tags. "Sx" is basically the classification for all animations with intercourse in them. You can find all 21 "Classes" in OStim's main script at the bottom with labels. Finally we have the animation name, "LiftedLotusSxBU".
+But what about tags? And what does all this mess mean??
+ Well let's break down the scene ID. First we have "0MF".
+  This is basically just the module it comes from (OSex male and female).
+   The next garbled mix of letters tells you how the actors are oriented relative to each other.
+    This isn't usually useful so if you want to decode it,
+     you can find the key in {OSex}\meshes\0SA\mod\0Sex\notes\PositionKey.txt.
+      Next up we have "Sx". This is the animation classification, 
+      basically it's OSex's version of tags. "Sx" is basically the
+       classification for all animations with intercourse in them.
+        You can find all 21 "Classes" in OStim's main script at the
+         bottom with labels. Finally we have the animation name, "LiftedLotusSxBU".
 
-In the Anim ID you can see that most of the data is the same, but the _S2 at the end just means "speed 2". The anim ID is what OStim will give you when you ask what the current animation is, and the scene ID is what OStim requests when you want to change the animation.
+In the Anim ID you can see that most of the data is the same,
+ but the _S2 at the end just means "speed 2". 
+ The anim ID is what OStim will give you when you ask what the current animation is,
+  and the scene ID is what OStim requests when you want to change the animation.
 
 Getting and using this data in OStim
 ostim.getCurrentAnimationClass() -> returns "Sx"
@@ -31,9 +48,6 @@ LyB = Lying on one's back
 LyF = Lying on one's front
 LyS = Lying on one's side
 Sit = Sitting
-
-
-
 
 	; vanilla OSex class library
 	ClassSex = "Sx"

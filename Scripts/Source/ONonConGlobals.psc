@@ -10,3 +10,9 @@ ONonConMCM Function GetONonConMCM() global
     endIf
     return mcm
 EndFunction
+
+function OTrace(string s, int severity = 0) global
+    if(true)
+        Debug.Trace("[ONonCon] "+s,severity)
+    endIf
+endFunction

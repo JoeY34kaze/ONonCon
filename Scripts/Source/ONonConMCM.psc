@@ -5,6 +5,7 @@ bool property modEnabled = false auto hidden
 bool property playerIsRapist = false auto hidden
 bool property playerIsVictim = false auto hidden
 string property loadCheck = "check" auto
+bool property isDevelopment = true auto
 
 string function checkIfFormFileLoaded()
     return loadCheck
@@ -18,8 +19,6 @@ EndEvent
 
 function startup()
     modEnabled = isModEnabled()
-    playerIsRapist = playerIsRapistSU()
-    playerIsVictim = playerIsVictimSU()
 endFunction
 
 function refreshPages()
@@ -56,7 +55,9 @@ endEvent
 
 state OPTION_INSTALL
     event OnSelectST()
-        Debug.MessageBox("Mod will be installed once the menu is closed.")
+        if(!isDevelopment)
+            Debug.MessageBox("Mod will be installed once the menu is closed.")
+        endIf
         enableMod()
     endEvent
     event OnDefaultST()
@@ -94,8 +95,12 @@ endState
 function enableMod()
     setModEnabled()
     postInstallationCleanup()
-    Utility.Wait(0.01);waits for 0.01 seconds in game time. Basically waits for user to return to game.
-    Debug.Notification("ONonCon Successfully installed")
+    if(!isDevelopment)
+        Utility.Wait(0.01);waits for 0.01 seconds in game time. Basically waits for user to return to game.
+        Debug.Notification("ONonCon Successfully installed")
+    else
+        refreshPages()
+    endIf
 endFunction
 
 function postInstallationCleanup()
