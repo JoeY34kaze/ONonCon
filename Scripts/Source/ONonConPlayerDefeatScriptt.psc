@@ -1,9 +1,8 @@
-Scriptname ONonConPlayerScript extends ReferenceAlias  
+Scriptname ONonConPlayerDefeatScriptt extends ReferenceAlias  
 {This represents the ONonCon Player.}
 ONonConMCM Property mcm = none auto hidden
 OSexIntegrationMain OStim
 ODatabaseScript ODataBase
-Actor Property player = none auto hidden
 Actor[] validActors
 ;https://www.nexusmods.com/skyrimspecialedition/articles/2490
 Event OnInit()
