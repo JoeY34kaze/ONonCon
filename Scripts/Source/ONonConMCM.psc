@@ -27,7 +27,7 @@ function refreshPages()
         Pages = new string[6]
         Pages[0]= "General"
         Pages[1]= "Agressor"
-        Pages[2]= "Victim"
+        Pages[2]= "Defeat"
         Pages[3]= "Follower"
         Pages[4]= "NPC"
         Pages[5]= "About"
@@ -49,8 +49,8 @@ event OnPageReset(string page)
     elseif page == "General"
     elseif page == "Agressor"
         AddToggleOptionST("OPTION_RAPIST","Allow Player to rape",playerIsRapist)
-    elseif page == "Victim"
-        AddToggleOptionST("OPTION_VICTIM","Allow Player to be the victim",playerIsVictim)
+    elseif page == "Defeat"
+        AddToggleOptionST("OPTION_DEFEAT","Allow Player to be the defeated",playerIsVictim)
     endIf
 endEvent
 
@@ -79,7 +79,7 @@ state OPTION_RAPIST
     endEvent
 endState
 
-state OPTION_VICTIM
+state OPTION_DEFEAT
     event OnSelectST()
         setPlayerVictim(true)
     endEvent

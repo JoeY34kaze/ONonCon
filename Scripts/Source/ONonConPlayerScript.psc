@@ -4,29 +4,44 @@ Scriptname ONonConPlayerScript extends ReferenceAlias
 ONonConMCM Property mcm = none auto hidden
 OSexIntegrationMain OStim
 Actor Property player = none auto hidden
-Actor[] currentActors
+Actor[] validActors
+Actor[] allActors
 ;https://www.nexusmods.com/skyrimspecialedition/articles/2490
 Event OnInit()
 	OStim = OUtils.GetOStim()
+    RegisterForModEvent("ostim_end", "OnEnd")
+
 endEvent
+
+Event OnEnd(string eventName, string strArg, float numArg, Form sender)
+    Debug.Trace("On End - Restoring actors and returning control to user.")
+    restoreActors()
+    Ostim.DisableOSAControls = false
+EndEvent
 
 Event OnEnterBleedout()
     Debug.Trace("<ONonCon> Bleedout!")
     Actor p = Game.GetPlayer()
+    ;p.StopCombat()
+    ;p.StopCombatAlarm()
     ;when player enters bleedour, scan for nearby possible enemies who would be willing to persorm noncon scenes. If no one is there, get up after 1 minute.
     ;Debug.Trace("You have entered bleedout and are thus vulnerable to noncon scenes.");
     ;Debug.Trace("Scanning for possible hostile actors.");
-    setHostileActors(2048.0); almost 30m
+    setValidActors(2048.0); almost 30m
     ;Debug.Trace("Found "+actors.Length+" hostile actors.");
-    Debug.Trace("<ONonCon> found "+currentActors.length+" actors within range")
+    Debug.Trace("<ONonCon> found "+validActors.length+" actors within range")
 
-    if (currentActors.length >0)
-        pacifyCurrentActors()
+    if (validActors.length >0)
+        Debug.Trace("<ONonCon> found several actors.")
+        SortActorsByRelationship()
+        pacifyAllActors()
+        Debug.Trace("<ONonCon> pacified")
+        Ostim.DisableOSAControls = true
         handleAssaultsOnPlayer()
     else
-        Debug.Notification("<ONonCon> No valid hostile actors found. You are left to bleed out, but you should recover in 2 minutes.");
+        Debug.Notification("<ONonCon> No valid hostile actors found. You are left to bleed out, but you should recover in a minute.");
         p.SetNoBleedoutRecovery(True)
-        Utility.Wait(2)
+        Utility.Wait(60)
         FadeToBlack(5)
         Utility.Wait(6)
         FadeFromBlack(1)
@@ -35,34 +50,54 @@ Event OnEnterBleedout()
     endif
 endEvent
 
-function pacifyCurrentActors()
+
+Function SortActorsByRelationship ()
+    Int Index1
+    Int Index2 = validActors.Length - 1
+        While (Index2 > 0)
+            Index1 = 0
+            While (Index1 < Index2)
+                If (validActors[Index1].GetRelationshipRank(Game.GetPlayer()) > validActors[Index1 + 1].GetRelationshipRank(Game.GetPlayer()))
+                    Actor temp = validActors [Index1]
+                    validActors [Index1] = validActors [Index1 + 1]
+                    validActors [Index1 + 1] = temp
+                EndIf
+                Index1 += 1
+            EndWhile
+            Index2 -= 1
+        EndWhile
+    EndFunction
+
+function handleAssaultsOnPlayer()
+    Actor p = Game.getPlayer()
+    Debug.Notification("<ONonCon> Found "+validActors.length+" villing participants to assault you. Hope you brought some lube.")
+    int amount = validActors.length
+
+    Actor thirdActor = none
+    If(validActors.length > 1)
+        thirdActor = validActors[1]
+    EndIf
+      ;String animationString
+      ;If(validActors[0].GetLeveledActorBase().GetSex() == 0);dom is male
+       ; animationString = "OpS|Sta!Sit|Ap|ColiseumMaleStart"
+      ;Else;dom is female
+       ; animationString = "OpS|LyB!Sta|Ap|ColiseumFemaleStart"
+      ;EndIf
+      ;OStim.StartScene(validActors[0], p, true, true, false, animationString, thirdActor, none, true, validActors[0])
+      OStim.StartScene(validActors[0], p, zThirdActor = thirdActor, aggressive = true, AggressingActor = validActors[0])
+
+endFunction
+
+function pacifyAllActors()
     int i = 0
-    while (i<currentActors.length)
-        unpacifyActor(currentActors[i])
+    while (i<allActors.length)
+        pacifyActor(allActors[i])
         i+=1
     endWhile
 endFunction
 
-function handleAssaultsOnPlayer()
-    Actor p = Game.getPlayer()
-    p.StopCombat()
-    p.StopCombatAlarm()  
-    Debug.Notification("<ONonCon> Found "+currentActors.length+" villing participants to assault you. Hope you brought some lube.")
-    OStim.StartScene(p,  currentActors[0])
-
-    while OStim.animationrunning()
-        Utility.wait(1)
-        if OStim.getactorexcitement(p) > 95
-            OStim.warptoanimation("0MF|Sy6!KNy9|Po|KnStraApPo")
-            OStim.SetCurrentAnimationSpeed(5)
-            ;return ;v skripti je return pa nevem zakaj
-        endif
-    endwhile
-endFunction
-
-
 function pacifyActor(Actor a)
-    {if an actor is in currentActors he should be always pacified}
+    {if an actor is in validActors he should be always pacified}
     int id = (a.getactorbase() as form).GetFormID()
     Debug.Trace("<ONonCon> Pacifying actor "+(a.getactorbase() as form).getname()+" FORM ID: "+id )
     ;stop combat and i guess set relations with player to be neutral
@@ -88,20 +123,30 @@ function unpacifyActor(Actor a)
     Debug.Trace("<ONonCon> Reverted actor pacification "+(a.getactorbase() as form).getname()+" FORM ID: "+id )
 endFunction
 
-function clearCurrentActors()
+function restoreActors()
+    int i = 0
+    while (i<allActors.length)
+        unpacifyActor(validActors[i])
+        i+=1
+    endWhile
+    validActors = none
+    allActors = none
+endFunction
+
+function clearAllActors()
     if (Ostim.AnimationRunning())
         Ostim.ForceStop()
     endIf
-
-    pacifyCurrentActors()
+    pacifyAllActors()
 endFunction
 
-function setHostileActors(float range)
+function setValidActors(float range)
     Debug.Trace("<ONonCon> inside actor finding function")
-    clearCurrentActors();
+    clearAllActors();
     ;range : 1 skyrim unit = 1.428 cm. human is about 128 units
     Actor ActorFound
     Actor[] ActorFoundArray = new Actor[20]
+    allActors = new Actor[50]
     String IDs
 
     Int i = 0
@@ -113,15 +158,19 @@ function setHostileActors(float range)
             ActorFoundArray[i] = ActorFound
             FoundCount += 1
         EndIf
+        if(ActorFoundArray.Find(ActorFound) == -1)
+            allActors[i]=ActorFound
+        endIf
         i += 1
     endWhile
 
-    currentActors = PapyrusUtil.ActorArray(FoundCount)
+    validActors = PapyrusUtil.ActorArray(FoundCount)
+    allActors = PapyrusUtil.ActorArray(allActors.length)
     i = 0
     Int FoundCountAdded = 0
     While (i < ScanAmount)
         If (ActorFoundArray[i])
-            currentActors[FoundCountAdded] = ActorFoundArray[i]
+            validActors[FoundCountAdded] = ActorFoundArray[i]
             FoundCountAdded += 1
             Debug.Trace("<ONonCon> Actor for assault player -> "+(ActorFoundArray[i].getactorbase() as form).getname())
         EndIf
@@ -130,28 +179,20 @@ function setHostileActors(float range)
     Debug.Trace("<ONonCon> Actor Scan Done")
 endFunction
 
-bool function willBeDefeated(ObjectReference akAggressor, Form akSource, Projectile akProjectile)
-    {calculates whether the incoming hit will defeat the player.}
-    float hp = getPlayer().getActorValue("Health")
-    bool result = false
-    Debug.Notification(""+hp) 
-    if hp <= 0
-        if isAgressorValidActor(akAggressor) 
-            result = true 
-        else
-            handlePlayerDeath()
-        endif 
-    endIf 
-    return result
-endFunction
 
-bool function isAgressorValidActor(ObjectReference akAggressor)
-    bool valid = isValidRace(akAggressor.GetSelfAsActor())
-    return valid
+bool function isAgressorValidActor(Actor a)
+    if(a == none || a == Game.GetPlayer())
+        return false 
+    endIf
+
+    bool validRace = isValidRace(a)
+    ;bool validRelationship = a.GetRelationshipRank(Game.GetPlayer()) < 1
+    ;Debug.Trace("<ONonCon> valid agressor : race "+validRace+" , hostile : "+validRelationship+" ( "+a.GetRelationshipRank(Game.GetPlayer())+")");
+    return validRace; && validRelationship
 endFunction
 
 bool function isValidRace(Actor a)
-    return true
+    return a.GetRace().HasKeyword(Keyword.GetKeyword("ActorTypeNPC"))
 endFunction
 
 function setPlayerEssential(bool b)
