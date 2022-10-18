@@ -7,6 +7,11 @@ bool property playerIsVictim = false auto hidden
 string property loadCheck = "check" auto
 bool property isDevelopment = true auto
 
+Shout Property SubmitShout auto
+WordOfPower Property SubmitShoutWord0 auto
+WordOfPower Property SubmitShoutWord1 auto
+WordOfPower Property SubmitShoutWord2 auto
+
 string function checkIfFormFileLoaded()
     return loadCheck
 endFunction
@@ -15,6 +20,10 @@ Event OnConfigInit()
     startup()
     ModName = "ONonCon"
     refreshPages()
+    SubmitShoutWord0 = Game.GetFormFromFile(0x03002DB0, "ONonCon.esp") as WordOfPower
+    SubmitShoutWord1 = Game.GetFormFromFile(0x03002DB1, "ONonCon.esp") as WordOfPower
+    SubmitShoutWord2 = Game.GetFormFromFile(0x03002DB2, "ONonCon.esp") as WordOfPower
+    SubmitShout = Game.GetFormFromFile(0x03002DB3, "ONonCon.esp") as Shout;0x03002DBF is the quest related to the shout
 EndEvent
 
 function startup()
@@ -120,6 +129,9 @@ endFunction
 function setModEnabled()
     StorageUtil.SetIntValue(none,"ONonCon.modEnabled",1)
     modEnabled = true
+    Game.TeachWord(SubmitShoutWord0)
+    Game.TeachWord(SubmitShoutWord1)
+    Game.TeachWord(SubmitShoutWord2)
 endFunction
 
 bool function playerIsRapistSU() global
@@ -152,3 +164,4 @@ bool function setPlayerVictim(bool b)
     ActorBase ab = a.GetLeveledActorBase()
     ab.SetEssential(b)
 endFunction
+WordOfPower Property ONonConWordOfPower0  Auto  
