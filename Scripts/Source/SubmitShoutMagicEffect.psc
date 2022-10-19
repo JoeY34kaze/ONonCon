@@ -10,12 +10,12 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
     endIf
 
     ONonConGlobals.OTrace("SHOUT EFFECT STARTED! ON ");+(akTarget.getactorbase() as form).getname()+" Cast by "+(akCaster.getactorbase() as form).getname())
-    if(tryToDefeatActorWithEffect(akTarget))
-        defeatActor(akTarget)
+    if(defeatCheck(akTarget))
+        ONonConGlobals.defeatActor(akTarget)
     endIf
 EndEvent
 
-bool function tryToDefeatActorWithEffect(Actor a)
+bool function defeatCheck(Actor a)
     float percentageOfHp = a.GetActorValuePercentage("Health")
     if(percentageOfHp <= 0.15)
         return true
@@ -23,9 +23,6 @@ bool function tryToDefeatActorWithEffect(Actor a)
         return Utility.RandomFloat() as bool
     else
         Debug.Notification("OnonCon - You need to reduce "+(a.getactorbase() as form).getname()+"'s hp below 25% for them to be vulnerable.")
+        return false
     endIf
-endFunction
-
-function defeatActor(Actor a)
-    ;this actor needs to be placed in some array somewhere. Global method i guess
 endFunction

@@ -28,6 +28,7 @@
         <Import>https://github.com/Sairion350/OOPapyrus/tree/main/scripts/source</Import>        
         <!--Import>https://github.com/powerof3/PapyrusExtenderSSE/tree/master/src/Papyrus</Import-->
         <Import>@ModsFolder\powerofthree's Papyrus Extender\Source\scripts</Import>
+        <Import>https://github.com/JoeY34kaze/UIExtensionsScripts/tree/main/scripts/source</Import>
         <Import>E:\Program Files (x86)\Steam\steamapps\common\Skyrim Special Edition\data\scripts\source</Import>
     </Imports>
     <Folders>
